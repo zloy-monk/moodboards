@@ -1,0 +1,20 @@
+<div class="grid grid-cols-[60%_40%]">
+  <div>
+    <h1 class="uppercase text-3xl font-semibold mb-4">
+      Moodboards/
+      <span class="text-base font-normal">{{ playlist()?.name }}</span>
+    </h1>
+
+    <app-player></app-player>
+  </div>
+
+  <div>
+    <div class="flex justify-between items-center mb-4 mt-[14px]">
+      <span class="text-white/40 text-sm">1990-2000</span>
+      <span class="text-sm">SCI-FI</span>
+    </div>
+  </div>
+  <!-- @if (playlist(); as p) { @for (track of p?.trackList; track track.name) {
+  <div>{{ track.name }}</div>
+  } } -->
+</div>
