@@ -1,25 +1,23 @@
 import { IPlaylist } from '../interfaces/playlist';
-import {
-  METAL_SOUL_TRACKS,
-  OKAK_KOREAN_TRACKS,
-  ROCK_CLASSICS_TRACKS,
-} from './track';
+import { OKAK_KOREAN_TRACKS, OKAK_TRACKS, SEREBRO_TRACKS } from './track';
 
 export const PLAYLISTS: IPlaylist[] = [
   {
     name: '엌악',
     slug: 'korean-okak',
     trackList: OKAK_KOREAN_TRACKS,
-    cover: '/cover/cover_1.jpg',
+    cover: 'cover/cover_1.jpg',
   },
   {
-    name: 'Metal Soul',
-    slug: 'metal-soul',
-    trackList: METAL_SOUL_TRACKS,
+    name: 'окак',
+    slug: 'okak',
+    trackList: OKAK_TRACKS,
+    cover: 'cover/cover_2.jpg',
   },
   {
-    name: 'Rock Classics',
-    slug: 'rock-classics',
-    trackList: ROCK_CLASSICS_TRACKS,
+    name: 'Serebro',
+    slug: 'serebro',
+    trackList: SEREBRO_TRACKS,
+    cover: 'album-cover/sladko.jpg',
   },
 ];

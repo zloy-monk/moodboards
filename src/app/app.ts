@@ -9,5 +9,5 @@ import { PlaylistNav } from './features/playlists/nav/playlist-nav/playlist-nav'
   styleUrl: './app.scss',
 })
 export class App {
-  protected title = 'sci-fi-player';
+  protected title = 'Moodboards';
 }
