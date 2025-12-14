@@ -1,0 +1,152 @@
+.equalizer-container-small {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.equalizer-bar-small {
+  width: 4px;
+  background-color: #35a78a;
+  min-height: 4px;
+  border: 1px solid rgba(53, 167, 138, 0.3);
+}
+
+.equalizer-bar-small:nth-child(1) {
+  animation: equalizer-small-1 1.2s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(2) {
+  animation: equalizer-small-2 1.1s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(3) {
+  animation: equalizer-small-3 1.3s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(4) {
+  animation: equalizer-small-4 1s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(5) {
+  animation: equalizer-small-5 1.4s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(6) {
+  animation: equalizer-small-6 1.15s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(7) {
+  animation: equalizer-small-7 1.25s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(8) {
+  animation: equalizer-small-8 1.05s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(9) {
+  animation: equalizer-small-9 1.35s ease-in-out infinite;
+}
+
+.equalizer-bar-small:nth-child(10) {
+  animation: equalizer-small-10 1.2s ease-in-out infinite;
+}
+
+@keyframes equalizer-small-1 {
+  0%,
+  100% {
+    height: 10px;
+  }
+  50% {
+    height: 20px;
+  }
+}
+
+@keyframes equalizer-small-2 {
+  0%,
+  100% {
+    height: 6px;
+  }
+  50% {
+    height: 16px;
+  }
+}
+
+@keyframes equalizer-small-3 {
+  0%,
+  100% {
+    height: 14px;
+  }
+  50% {
+    height: 24px;
+  }
+}
+
+@keyframes equalizer-small-4 {
+  0%,
+  100% {
+    height: 18px;
+  }
+  50% {
+    height: 28px;
+  }
+}
+
+@keyframes equalizer-small-5 {
+  0%,
+  100% {
+    height: 12px;
+  }
+  50% {
+    height: 22px;
+  }
+}
+
+@keyframes equalizer-small-6 {
+  0%,
+  100% {
+    height: 8px;
+  }
+  50% {
+    height: 18px;
+  }
+}
+
+@keyframes equalizer-small-7 {
+  0%,
+  100% {
+    height: 6px;
+  }
+  50% {
+    height: 16px;
+  }
+}
+
+@keyframes equalizer-small-8 {
+  0%,
+  100% {
+    height: 4px;
+  }
+  50% {
+    height: 14px;
+  }
+}
+
+@keyframes equalizer-small-9 {
+  0%,
+  100% {
+    height: 10px;
+  }
+  50% {
+    height: 20px;
+  }
+}
+
+@keyframes equalizer-small-10 {
+  0%,
+  100% {
+    height: 16px;
+  }
+  50% {
+    height: 26px;
+  }
+}

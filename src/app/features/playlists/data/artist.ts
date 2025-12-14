@@ -2,6 +2,11 @@ import { IArtist } from '../interfaces/artist';
 
 export const ARTISTS: IArtist[] = [
   {
+    name: 'BTS',
+    description:
+      'South Korean boy band known for blending pop, hip-hop, and R&B.',
+  },
+  {
     name: 'Iron Pulse',
     description:
       'A heavy metal band known for aggressive riffs and deep vocals.',

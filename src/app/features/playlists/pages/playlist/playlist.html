@@ -1,20 +1,159 @@
-<div class="grid grid-cols-[60%_40%]">
-  <div>
-    <h1 class="uppercase text-3xl font-semibold mb-4">
+<div class="grid grid-cols-[50%_50%] h-full">
+  <!-- Left Panel: Player -->
+  <div class="flex flex-col">
+    <h1 class="uppercase text-3xl font-semibold mb-6 text-[#35a78a] font-mono">
       Moodboards/
-      <span class="text-base font-normal">{{ playlist()?.name }}</span>
+      <span class="text-base font-normal text-white/80 font-mono">
+        {{ playlist()?.name }}</span
+      >
     </h1>
 
-    <app-player></app-player>
+    <app-player
+      [currentPlaylist]="playlist()"
+      [currentTrack]="selectedTrack()"
+      [currentQueue]="playlistQueue()"
+      (isPlayingChange)="onPlayingChange($event)"
+      (trackChange)="onTrackChange($event)"
+    ></app-player>
   </div>
 
-  <div>
-    <div class="flex justify-between items-center mb-4 mt-[14px]">
-      <span class="text-white/40 text-sm">1990-2000</span>
-      <span class="text-sm">SCI-FI</span>
+  <!-- Right Panel: Track List / Description -->
+  <div class="flex flex-col ml-5">
+    <div class="flex justify-between items-center mb-6 mt-[14px]">
+      <span class="text-white/40 text-sm font-mono">1999-2005</span>
+      <span class="text-sm text-[#35a78a] font-semibold font-mono"
+        >@ostrtr</span
+      >
     </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-4 mb-6 border-b border-white/10">
+      <button
+        (click)="setActiveTab('tracks')"
+        [class]="activeTab() === 'tracks' 
+          ? 'px-4 py-2 text-sm font-medium text-[#35a78a] border-b-2 border-[#35a78a] font-mono' 
+          : 'px-4 py-2 text-sm font-medium text-white/40 hover:text-white/60 font-mono'"
+      >
+        TRACKS
+      </button>
+      <button
+        (click)="setActiveTab('description')"
+        [class]="activeTab() === 'description' 
+          ? 'px-4 py-2 text-sm font-medium text-[#35a78a] border-b-2 border-[#35a78a] font-mono' 
+          : 'px-4 py-2 text-sm font-medium text-white/40 hover:text-white/60 font-mono'"
+      >
+        DESCRIPTION
+      </button>
+    </div>
+
+    <!-- Track List -->
+    @if (activeTab() === 'tracks' && playlist(); as p) {
+    <div
+      #trackListContainer
+      class="flex flex-col gap-3 overflow-y-auto font-mono max-h-[430px]"
+    >
+      @for (track of p.trackList; track track.name; let i = $index) {
+      <div
+        #trackElement
+        [id]="'track-' + i"
+        (click)="selectTrack(p.trackList, i)"
+        [class]="selectedTrack()?.name === track.name 
+              ? 'flex items-center gap-4 p-3 rounded-lg bg-white/10 cursor-pointer transition-colors group border border-[#35a78a]/50' 
+              : 'flex items-center gap-4 p-3 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group'"
+      >
+        <div>{{ i + 1 }}</div>
+        <div
+          class="relative w-12 h-12 bg-white/10 rounded shrink-0 flex items-center justify-center overflow-hidden"
+        >
+          <img
+            [src]="track.cover"
+            [alt]="track.name"
+            class="w-full h-full object-cover"
+            onerror="this.src='/cover/cover_1.jpg'"
+          />
+          @if (isTrackPlaying(track)) {
+          <div
+            class="absolute inset-0 flex items-end justify-center bg-black/50"
+          >
+            <div class="equalizer-container-small">
+              <div class="equalizer-bar-small"></div>
+              <div class="equalizer-bar-small"></div>
+              <div class="equalizer-bar-small"></div>
+              <div class="equalizer-bar-small"></div>
+              <div class="equalizer-bar-small"></div>
+              <div class="equalizer-bar-small"></div>
+            </div>
+          </div>
+          }
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-medium text-white truncate">
+            {{ track.name }}
+          </div>
+          <div class="text-xs text-white/50 truncate">
+            {{ track.artist.name }}
+          </div>
+        </div>
+        <div class="text-xs text-white/40 shrink-0">
+          {{ Math.floor(track.duration / 60) }}:{{ (track.duration %
+          60).toString().padStart(2, '0') }}
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Description -->
+    @if (activeTab() === 'description' && selectedTrack(); as track) {
+    <div class="flex flex-col gap-6 text-[#35a78a] font-mono">
+      <!-- Artist Profile -->
+      <div class="flex flex-col gap-2 border-b border-[#35a78a]/30 pb-4">
+        <div class="text-xs uppercase tracking-wider">ARTIST PROFILE</div>
+        <div class="text-2xl font-bold">{{ track.artist.name }}</div>
+      </div>
+
+      <!-- Track Name -->
+      <div class="flex flex-col gap-2 border-b border-[#35a78a]/30 pb-4">
+        <div class="text-xs uppercase tracking-wider">TRACK NAME</div>
+        <div class="text-xl">{{ track.name }}</div>
+      </div>
+
+      <!-- Duration -->
+      <div class="flex flex-col gap-2 border-b border-[#35a78a]/30 pb-4">
+        <div class="text-xs uppercase tracking-wider">ALBUM</div>
+        <div class="text-sm truncate">
+          <!-- {{ Math.floor(track.duration / 60).toString().padStart(2, '0') }}:{{
+          (track.duration % 60).toString().padStart(2, '0') }} -->
+          {{ track.album }}
+        </div>
+      </div>
+
+      <!-- Bio Data -->
+      <div class="flex flex-col gap-2 border-b border-[#35a78a]/30 pb-4">
+        <div class="text-xs uppercase tracking-wider">BIO DATA</div>
+        <div class="text-sm leading-relaxed">
+          {{ track.artist.description }}
+        </div>
+      </div>
+
+      <!-- Format and Status -->
+      <div class="grid grid-cols-2 gap-6">
+        <div class="flex flex-col gap-2">
+          <div class="text-xs uppercase tracking-wider">FORMAT</div>
+          <div class="text-sm">MP3 / 320 KBPS</div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="text-xs uppercase tracking-wider">STATUS</div>
+          <div class="text-sm">READY TO PLAY</div>
+        </div>
+      </div>
+    </div>
+    } @else if (activeTab() === 'description' && !selectedTrack()) {
+    <div
+      class="flex items-center justify-center h-full text-[#35a78a]/50 text-sm text-center uppercase font-mono"
+    >
+      Not found
+    </div>
+    }
   </div>
-  <!-- @if (playlist(); as p) { @for (track of p?.trackList; track track.name) {
-  <div>{{ track.name }}</div>
-  } } -->
 </div>

@@ -1,1 +1,212 @@
-<p>player works!</p>
+<div class="flex flex-col gap-6">
+  <!-- Album Cover -->
+  <div
+    class="relative w-full aspect-square bg-black/20 rounded-lg overflow-hidden"
+    [class]="isPlaying() && currentTrack() 
+      ? 'border-4 border-[#35a78a] animate-pulse-border' 
+      : 'border-4 border-[#35a78a]/30'"
+  >
+    <img
+      (click)="togglePlay()"
+      [src]="currentPlaylist()?.cover"
+      [alt]="currentTrack()?.name || 'Album Cover'"
+      class="w-full h-full object-cover opacity-30 cursor-pointer"
+      onerror="this.src='/cover/cover_1.jpg'"
+    />
+    <!-- HUD Overlay -->
+    <div class="absolute inset-0 pointer-events-none">
+      <!-- Center -->
+      <div
+        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-mono text-3xl font-bold text-center"
+      >
+        {{ currentPlaylist()?.name }}
+      </div>
+      <!-- Top Left -->
+      <div
+        class="absolute top-4 left-4 flex items-center gap-2 text-[#35a78a] text-xs font-mono"
+      >
+        <span class="uppercase">{{currentTrack()?.name}}</span>
+        <span class="flex items-center gap-1">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
+            />
+          </svg>
+          @if (isPlaying()) {
+          <span>PLAY</span>
+          } @else {
+          <span>PAUSE</span>
+          }
+        </span>
+      </div>
+
+      <!-- Top Right - Animated Equalizer -->
+      <div class="absolute top-4 right-4 text-[#35a78a]">
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      </div>
+
+      <!-- Bottom Left - Time -->
+      <div class="absolute bottom-4 left-4 text-[#35a78a] text-xs font-mono">
+        <div>AM 09:08</div>
+        <div>APR. 12 1961</div>
+      </div>
+
+      <!-- Bottom Right - Gallery Icon -->
+      @if (isPlaying() && currentTrack()) {
+      <div class="absolute bottom-4 right-4 equalizer-container">
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+        <div class="equalizer-bar"></div>
+      </div>
+      } @else {
+      <div class="absolute bottom-4 right-4 flex items-end gap-1 h-8">
+        <div class="w-1 bg-[#35a78a] h-2"></div>
+        <div class="w-1 bg-[#35a78a] h-4"></div>
+        <div class="w-1 bg-[#35a78a] h-6"></div>
+        <div class="w-1 bg-[#35a78a] h-3"></div>
+        <div class="w-1 bg-[#35a78a] h-5"></div>
+        <div class="w-1 bg-[#35a78a] h-2"></div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="flex flex-col gap-2">
+    <div class="relative h-1 bg-white/10 rounded-full overflow-hidden">
+      <div
+        class="absolute left-0 top-0 h-full bg-[#35a78a] transition-all duration-300"
+        [style.width.%]="currentTime() > 0 ? (currentTime() / (currentTrack()?.duration || 1)) * 100 : 0"
+      ></div>
+    </div>
+    <div class="flex justify-between items-center text-xs text-white/60">
+      <span class="font-mono">{{ formattedTime }}</span>
+      <span class="font-mono">
+        @if (currentTrack(); as track) { {{ Math.floor(track.duration /
+        60).toString().padStart(2, '0') }}:{{ (track.duration %
+        60).toString().padStart(2, '0') }} } @else { 00:00 }
+      </span>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="flex items-center justify-center gap-4">
+    <!-- Fast Rewind -->
+    <button
+      (click)="rewind()"
+      class="p-2 text-[#35a78a] hover:text-[#35a78a]/80 hover:bg-white/5 rounded transition-colors cursor-pointer"
+      aria-label="Fast Rewind"
+    >
+      <svg class="w-6 h-6 rotate-180" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+          clip-rule="evenodd"
+        />
+        <path
+          fill-rule="evenodd"
+          d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+
+    <!-- Rewind -->
+    <button
+      (click)="previous()"
+      class="p-2 text-[#35a78a] hover:text-[#35a78a]/80 hover:bg-white/5 rounded transition-colors cursor-pointer"
+      aria-label="Previous"
+    >
+      <svg
+        class="w-6 h-6 rotate-180 translate-x-[4px]"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+
+    <!-- Play/Pause -->
+    <button
+      (click)="togglePlay()"
+      class="p-4 text-[#35a78a] hover:text-[#35a78a]/80 hover:bg-white/5 rounded-full border-2 border-[#35a78a] transition-colors cursor-pointer"
+      aria-label="Play/Pause"
+    >
+      @if (isPlaying()) {
+      <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      } @else {
+      <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      }
+    </button>
+
+    <!-- Forward -->
+    <button
+      (click)="next()"
+      class="p-2 text-[#35a78a] hover:text-[#35a78a]/80 hover:bg-white/5 rounded transition-colors cursor-pointer"
+      aria-label="Next"
+    >
+      <svg
+        class="w-6 h-6 translate-x-[-2px]"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+
+    <!-- Fast Forward -->
+    <button
+      (click)="forward()"
+      class="p-2 text-[#35a78a] hover:text-[#35a78a]/80 hover:bg-white/5 rounded transition-colors cursor-pointer"
+      aria-label="Fast Forward"
+    >
+      <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10.293 15.707a1 1 0 010-1.414L14.586 10l-4.293-4.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+          clip-rule="evenodd"
+        />
+        <path
+          fill-rule="evenodd"
+          d="M4.293 15.707a1 1 0 010-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+  </div>
+</div>
