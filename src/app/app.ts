@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { PlaylistNav } from './features/playlists/nav/playlist-nav/playlist-nav';
 
@@ -10,4 +10,20 @@ import { PlaylistNav } from './features/playlists/nav/playlist-nav/playlist-nav'
 })
 export class App {
   protected title = 'Moodboards';
+  isGiftModalOpen = signal<boolean>(false);
+  isGiftCardFlipped = signal<boolean>(false);
+
+  onGiftModalOpen(): void {
+    this.isGiftModalOpen.set(true);
+    this.isGiftCardFlipped.set(false);
+  }
+
+  onGiftModalClose(): void {
+    this.isGiftModalOpen.set(false);
+    this.isGiftCardFlipped.set(false);
+  }
+
+  flipGiftCard(): void {
+    this.isGiftCardFlipped.set(!this.isGiftCardFlipped());
+  }
 }

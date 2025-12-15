@@ -1,9 +1,71 @@
 <div class="flex h-screen">
   <main class="w-[60%] m-auto grid grid-cols-[1fr_12fr] gap-5">
-    <app-playlist-nav></app-playlist-nav>
+    <app-playlist-nav
+      (giftModalOpen)="onGiftModalOpen()"
+      (giftModalClose)="onGiftModalClose()"
+    ></app-playlist-nav>
 
-    <div class="border-4 border-[#35a78a] rounded-2xl p-5">
+    <div class="border-4 border-[#35a78a] rounded-2xl p-5 relative">
       <router-outlet></router-outlet>
+
+      <!-- Gift Modal Overlay -->
+      @if (isGiftModalOpen()) {
+      <div class="absolute inset-0 bg-black/80 rounded-xl z-50">
+        <!-- Close button in top-right corner -->
+        <button
+          (click)="$event.stopPropagation(); onGiftModalClose()"
+          class="absolute top-4 right-4 z-10 text-[#35a78a] hover:text-[#35a78a]/80 transition-colors cursor-pointer"
+          aria-label="Close"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-x"
+          >
+            <path d="M18 6 6 18" />
+            <path d="M6 6l12 12" />
+          </svg>
+        </button>
+
+        <!-- Gift Card with flip animation -->
+        <div
+          class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50%] cursor-pointer"
+          (click)="flipGiftCard()"
+        >
+          <div
+            class="relative w-full aspect-video"
+            [class.flipped]="isGiftCardFlipped()"
+          >
+            <!-- Front side -->
+            <div class="gift-card-front absolute inset-0 w-full h-full">
+              <img
+                src="gift/gift_1.jpg"
+                alt="Gift card front"
+                class="w-full h-full object-cover border-[3px] border-[#35a78a] animate-pulse-border rounded-[14px]"
+              />
+            </div>
+            <!-- Back side -->
+            <div class="gift-card-back absolute inset-0 w-full h-full">
+              <img
+                src="gift/gift_2.jpg"
+                alt="Gift card back"
+                class="w-full h-full object-cover border-[3px] border-[#35a78a] animate-pulse-border rounded-[14px]"
+              />
+            </div>
+          </div>
+          <!-- <h3 class="font-mono font-bold text-center mt-5">
+            Congratulations! <3
+          </h3> -->
+        </div>
+      </div>
+      }
     </div>
   </main>
 </div>

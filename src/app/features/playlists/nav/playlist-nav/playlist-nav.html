@@ -36,12 +36,9 @@
     </li>
     }
     <li>
-      <a
-        [routerLink]="['/playlist', 'golden_apple']"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        #rls="routerLinkActive"
-        class="mb-4 block"
+      <button
+        (click)="openGiftModal()"
+        class="mb-4 block w-full cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -64,12 +61,10 @@
         </svg>
         <div
           class="uppercase text-sm mt-1 text-ellipsis font-mono text-center text-[#F7655F]"
-          [class.font-bold]="rls.isActive"
-          [class.font-light]="!rls.isActive"
         >
           Gift
         </div>
-      </a>
+      </button>
     </li>
   </ul>
 </div>
