@@ -21,6 +21,7 @@ export class Player implements OnDestroy {
   currentQueue = input<ITrack[] | null>(null);
   isPlaying = signal<boolean>(false);
   currentTime = signal<number>(0);
+  playbackMode = signal<'repeat-one' | 'repeat-all' | 'shuffle'>('repeat-all');
   isPlayingChange = output<boolean>();
   trackChange = output<ITrack>();
   private audio = new Audio();
@@ -36,9 +37,62 @@ export class Player implements OnDestroy {
     });
 
     this.audio.addEventListener('ended', () => {
-      this.isPlaying.set(false);
+      const mode = this.playbackMode();
+      const playlist = this.currentPlaylist();
+      const current = this.currentTrack();
+
+      // Если нет текущего трека или плейлиста — просто останавливаемся
+      if (!current || !playlist || !playlist.trackList?.length) {
+        this.isPlaying.set(false);
+        this.currentTime.set(0);
+        this.isPlayingChange.emit(false);
+        return;
+      }
+
+      // repeat-one: перезапускаем текущий трек
+      if (mode === 'repeat-one') {
+        this.audio.currentTime = 0;
+        this.currentTime.set(0);
+        this.audio.play().catch(() => {
+          this.isPlaying.set(false);
+          this.isPlayingChange.emit(false);
+        });
+        return;
+      }
+
+      const tracks = playlist.trackList;
+      const currentIndex = tracks.findIndex((t) => t.name === current.name);
+
+      let nextIndex = 0;
+
+      if (mode === 'repeat-all') {
+        // Зациклить плейлист по порядку
+        nextIndex =
+          currentIndex === -1 ? 0 : (currentIndex + 1) % tracks.length;
+      } else {
+        // shuffle: зациклить плейлист в рандомном порядке
+        if (tracks.length === 1) {
+          nextIndex = currentIndex === -1 ? 0 : currentIndex;
+        } else {
+          do {
+            nextIndex = Math.floor(Math.random() * tracks.length);
+          } while (nextIndex === currentIndex && tracks.length > 1);
+        }
+      }
+
+      const nextTrack = tracks[nextIndex];
+
+      if (!nextTrack) {
+        this.isPlaying.set(false);
+        this.currentTime.set(0);
+        this.isPlayingChange.emit(false);
+        return;
+      }
+
+      // Делегируем переключение трека родителю через trackChange.
+      // isPlaying остаётся true, effect сработает и запустит новый трек.
       this.currentTime.set(0);
-      this.isPlayingChange.emit(false);
+      this.trackChange.emit(nextTrack);
     });
 
     // Сброс времени при смене трека и автоматический запуск
@@ -72,6 +126,17 @@ export class Player implements OnDestroy {
     this.audio.src = '';
     if (this.timeUpdateInterval) {
       clearInterval(this.timeUpdateInterval);
+    }
+  }
+
+  cyclePlaybackMode(): void {
+    const mode = this.playbackMode();
+    if (mode === 'repeat-all') {
+      this.playbackMode.set('repeat-one');
+    } else if (mode === 'repeat-one') {
+      this.playbackMode.set('shuffle');
+    } else {
+      this.playbackMode.set('repeat-all');
     }
   }
 
@@ -132,16 +197,24 @@ export class Player implements OnDestroy {
     // Предыдущий трек - индекс 0
     const previousTrack = queue[0];
 
-    if (previousTrack) {
-      const wasPlaying = this.isPlaying();
-      this.audio.pause();
-      this.currentTime.set(0);
-      this.trackChange.emit(previousTrack);
+    if (this.audio.currentTime >= 10) {
+      this.audio.currentTime = 0;
+      return;
+    }
 
-      // Сохраняем состояние воспроизведения для effect
-      if (wasPlaying) {
-        this.isPlaying.set(true);
+    if (this.audio.currentTime < 10) {
+      if (previousTrack) {
+        const wasPlaying = this.isPlaying();
+        this.audio.pause();
+        this.currentTime.set(0);
+        this.trackChange.emit(previousTrack);
+
+        // Сохраняем состояние воспроизведения для effect
+        if (wasPlaying) {
+          this.isPlaying.set(true);
+        }
       }
+      return;
     }
   }
 
